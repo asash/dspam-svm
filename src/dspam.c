@@ -99,6 +99,7 @@ int verified_user = 0;
 #include "heap.h"
 #include "pref.h"
 #include "config_api.h"
+#include <stdio.h>
 
 #define USE_LMTP        (_ds_read_attribute(agent_config, "DeliveryProto") && !strcmp(_ds_read_attribute(agent_config, "DeliveryProto"), "LMTP"))
 #define USE_SMTP        (_ds_read_attribute(agent_config, "DeliveryProto") && !strcmp(_ds_read_attribute(agent_config, "DeliveryProto"), "SMTP"))
@@ -348,7 +349,6 @@ process_message (
   int have_signature = 0;
   int result, i;
   int internally_canned = 0;
-
   ATX->timestart = _ds_gettime();	/* set tick count to get run time */
 
   if (message->data == NULL) {
@@ -364,7 +364,6 @@ process_message (
     result = EUNKNOWN;
     goto RETURN;
   }
-
   /* Configure libdspam's storage properties, then attach storage */
 
   set_libdspam_attributes(CTX);
@@ -398,9 +397,7 @@ process_message (
     result = EUNKNOWN;
     goto RETURN;
   }
-
   CTX->message = components;
-
 #ifdef CLAMAV
   /* Check for viruses */
 

@@ -8,7 +8,8 @@
 
 includedir=@includedir@/dspam
 
-SUBDIRS = . webui m4 man src 
+
+SUBDIRS = . webui m4 man src
 DIST_SUBDIRS = . webui m4 txt man src doc contrib
 
 EXTRA_DIST = autogen.sh RELEASE.NOTES CHANGELOG LICENSE \

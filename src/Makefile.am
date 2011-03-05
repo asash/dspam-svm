@@ -6,9 +6,9 @@
 
 includedir=@includedir@/dspam
 
-SUBDIRS = . tools $(storage_drv_subdirs) 
+SUBDIRS = . tools $(storage_drv_subdirs)
 DIST_SUBDIRS = . \
-	tools.mysql_drv tools.pgsql_drv tools.sqlite_drv tools.hash_drv tools 
+	tools.mysql_drv tools.pgsql_drv tools.sqlite_drv tools.hash_drv tools
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = dspam.pc
@@ -18,7 +18,7 @@ libversion = 7:0:0
 
 # Defaults from dspam.conf
 
-EXTRA_DIST = example.c dspam.pc.in dspam-uninstalled.pc.in dspam.conf.in 
+EXTRA_DIST = example.c dspam.pc.in dspam-uninstalled.pc.in dspam.conf.in
 
 CLEANFILES = dspam.conf
 
@@ -57,7 +57,7 @@ bin_PROGRAMS = dspam dspamc
 # installed for libdspam
 include_HEADERS = buffer.h config_shared.h decode.h error.h diction.h \
 	libdspam.h libdspam_objects.h nodetree.h tokenizer.h \
-	storage_driver.h heap.h config.h pref.h read_config.h
+	storage_driver.h heap.h config.h pref.h read_config.h svm_classify.h
 
 if BUILD_EXT_LOOKUP
 include_HEADERS += external_lookup.h
@@ -81,7 +81,8 @@ libdspam_la_SOURCES = \
 	hash.c hash.h \
 	list.c list.h \
 	tokenizer.c tokenizer.h \
-	storage_driver.h
+	storage_driver.h\
+	svm_classify.h svm_classify.c
 
 if BUILD_EXT_LOOKUP
 libdspam_la_SOURCES += external_lookup.c external_lookup.h
@@ -132,15 +133,15 @@ libdspam_la_LDFLAGS = -rpath '$(libdir)' -version-info $(libversion)
 if DYNAMIC_DRIVER
 
 libmysql_drv_la_SOURCES = \
-	mysql_drv.c mysql_drv.h 
+	mysql_drv.c mysql_drv.h
 libmysql_drv_la_LIBADD = $(libmysql_drv_libs) -L. -ldspam
 libmysql_drv_la_CPPFLAGS = $(libmysql_drv_cppflags)
 libmysql_drv_la_LDFLAGS = $(libmysql_drv_ldflags)
-libmysql_drv_la_LDFLAGS += -rpath '$(pkglibdir)' -version-info $(libversion) 
+libmysql_drv_la_LDFLAGS += -rpath '$(pkglibdir)' -version-info $(libversion)
 libmysql_drv_la_DEPENDENCIES = libdspam.la
 
 libpgsql_drv_la_SOURCES = \
-	pgsql_drv.c pgsql_drv.h 
+	pgsql_drv.c pgsql_drv.h
 libpgsql_drv_la_LIBADD = $(libpgsql_drv_libs) -L. -ldspam
 libpgsql_drv_la_CPPFLAGS = $(libpgsql_drv_cppflags)
 libpgsql_drv_la_LDFLAGS = $(libpgsql_drv_ldflags)
@@ -148,7 +149,7 @@ libpgsql_drv_la_LDFLAGS += -rpath '$(pkglibdir)' -version-info $(libversion)
 libpgsql_drv_la_DEPENDENCIES = libdspam.la
 
 libsqlite_drv_la_SOURCES = \
-	sqlite_drv.c sqlite_drv.h 
+	sqlite_drv.c sqlite_drv.h
 libsqlite_drv_la_LIBADD = $(libsqlite_drv_libs) -L. -ldspam
 libsqlite_drv_la_CPPFLAGS = $(libsqlite_drv_cppflags)
 libsqlite_drv_la_LDFLAGS = $(libsqlite_drv_ldflags)
@@ -156,7 +157,7 @@ libsqlite_drv_la_LDFLAGS += -rpath '$(pkglibdir)' -version-info $(libversion)
 libsqlite_drv_la_DEPENDENCIES = libdspam.la
 
 libsqlite3_drv_la_SOURCES = \
-	sqlite3_drv.c sqlite3_drv.h 
+	sqlite3_drv.c sqlite3_drv.h
 libsqlite3_drv_la_LIBADD = $(libsqlite3_drv_libs) -L. -ldspam
 libsqlite3_drv_la_CPPFLAGS = $(libsqlite3_drv_cppflags)
 libsqlite3_drv_la_LDFLAGS = $(libsqlite3_drv_ldflags)
@@ -192,10 +193,10 @@ dspamc_SOURCES = \
 	buffer.h error.h \
 	read_config.c read_config.h \
 	client.c client.h \
-	agent_shared.c agent_shared.h 
+	agent_shared.c agent_shared.h
 
 dspamc_LDADD = -lm buffer.o config_shared.o error.o pref.o nodetree.o util.o $(NETLIBS) $(DLLIBS)
-dspamc_LDFLAGS = 
+dspamc_LDFLAGS =
 dspamc_DEPENDENCIES = buffer.o config_shared.o error.o pref.o nodetree.o util.o
 
 # Failing of chgrp is expected and normal case when someone do

@@ -84,6 +84,10 @@
 int
 _ds_tokenize (DSPAM_CTX * CTX, char *headers, char *body, ds_diction_t diction)
 {
+#ifdef VERBOSE
+    LOGDEBUG("asash: tokenizing...");
+#endif
+
   if (diction == NULL)
     return EINVAL;
 
@@ -121,7 +125,7 @@ int _ds_tokenize_ngram(
   /*
    * Header Tokenization
    */
- 
+
   header = nt_create (NT_CHAR);
   if (header == NULL)
   {
@@ -167,7 +171,7 @@ int _ds_tokenize_ngram(
         char *fromline = line + 5;
         unsigned long long whitelist_token;
 
-        if (fromline[0] == 32) 
+        if (fromline[0] == 32)
           fromline++;
         snprintf(wl, sizeof(wl), "%s*%s", heading, fromline);
         whitelist_token = _ds_getcrc64(wl);
@@ -193,7 +197,7 @@ int _ds_tokenize_ngram(
 
         /* Process "current" token */
         if (!_ds_process_header_token
-            (CTX, token, previous_token, diction, heading) && 
+            (CTX, token, previous_token, diction, heading) &&
             (tokenizer == DSZ_CHAIN))
         {
           previous_token = token;
@@ -282,9 +286,9 @@ int _ds_tokenize_sparse(
   }
 
   /*
-   * Header Tokenization 
+   * Header Tokenization
    */
- 
+
   header = nt_create (NT_CHAR);
   if (header == NULL)
   {
@@ -333,10 +337,10 @@ int _ds_tokenize_sparse(
         char *fromline = line + 5;
         unsigned long long whitelist_token;
 
-        if (fromline[0] == 32) 
+        if (fromline[0] == 32)
           fromline++;
         snprintf(wl, sizeof(wl), "%s*%s", heading, fromline);
-        whitelist_token = _ds_getcrc64(wl); 
+        whitelist_token = _ds_getcrc64(wl);
         ds_diction_touch(diction, whitelist_token, wl, 0);
         diction->whitelist_token = whitelist_token;
       }
@@ -422,9 +426,9 @@ int _ds_tokenize_sparse(
  *
  *  These functions are responsible to converting the input words into
  *  full blown tokens with CRCs, probabilities, and producing variants
- *  based on the tokenizer approach applied. 
+ *  based on the tokenizer approach applied.
  */
- 
+
 int
 _ds_process_header_token (DSPAM_CTX * CTX, char *token,
                           const char *previous_token, ds_diction_t diction,
@@ -460,7 +464,7 @@ _ds_process_header_token (DSPAM_CTX * CTX, char *token,
 #endif
   ds_diction_touch(diction, crc, combined_token, 0);
 
-  if (CTX->tokenizer == DSZ_CHAIN && previous_token != NULL) 
+  if (CTX->tokenizer == DSZ_CHAIN && previous_token != NULL)
   {
     char *tweaked_previous;
 
@@ -545,11 +549,11 @@ _ds_map_header_token (DSPAM_CTX * CTX, char *token,
 
   previous_tokens[SPARSE_WINDOW_SIZE-1] = token;
 
-  if (token) 
+  if (token)
     active++;
 
   breadth = _ds_pow2(active);
-  
+
   /* Iterate and generate all keys necessary */
   for (mask=0; mask < (u_int32_t)breadth; mask++) {
     int terms = 0;
@@ -605,7 +609,7 @@ _ds_map_header_token (DSPAM_CTX * CTX, char *token,
         keylen -=2;
       }
       while(!strncmp(k, "#+", 2)) {
-        top = 0; 
+        top = 0;
         k+=2;
         keylen -= 2;
       }
@@ -626,7 +630,7 @@ _ds_map_body_token (
   DSPAM_CTX * CTX,
   char *token,
   char **previous_tokens,
-  ds_diction_t diction, 
+  ds_diction_t diction,
   const char *bitpattern)
 {
   int i, t, keylen, breadth;
@@ -639,12 +643,12 @@ _ds_map_body_token (
   /* Shift all previous tokens up */
   for(i=0;i<SPARSE_WINDOW_SIZE-1;i++) {
     previous_tokens[i] = previous_tokens[i+1];
-    if (previous_tokens[i]) 
+    if (previous_tokens[i])
       active++;
   }
 
   previous_tokens[SPARSE_WINDOW_SIZE-1] = token;
-  if (token) 
+  if (token)
     active++;
 
   breadth = _ds_pow2(active);
@@ -702,11 +706,11 @@ _ds_map_body_token (
         keylen -=2;
       }
       while(!strncmp(k, "#+", 2)) {
-        top = 0; 
+        top = 0;
         k+=2;
         keylen -=2;
       }
- 
+
       if (top) {
         crc = _ds_getcrc64(k);
         ds_diction_touch(diction, crc, k, DSD_CONTEXT);
@@ -724,7 +728,7 @@ _ds_map_body_token (
  *   Degenerate the message into headers, body and tokenizable pieces
  *
  *   This function is responsible for analyzing the actualized message and
- *   degenerating it into only the components which are tokenizable.  This 
+ *   degenerating it into only the components which are tokenizable.  This
  *   process  effectively eliminates much HTML noise, special symbols,  or
  *   other  non-tokenizable/non-desirable components. What is left  is the
  *   bulk of  the message  and only  desired tags,  URLs, and other  data.
@@ -865,7 +869,7 @@ int _ds_degenerate_message(DSPAM_CTX *CTX, buffer * header, buffer * body)
   return 0;
 }
 
-int _ds_url_tokenize(ds_diction_t diction, char *body, const char *key) 
+int _ds_url_tokenize(ds_diction_t diction, char *body, const char *key)
 {
   char *token, *url_ptr, *url_token, *ptr;
   char combined_token[256];
@@ -884,9 +888,9 @@ int _ds_url_tokenize(ds_diction_t diction, char *body, const char *key)
   {
     int i = 0, old;
 
-    while(token[i] 
-       && token[i] > 32  
-       && token[i] != '>' 
+    while(token[i]
+       && token[i] > 32
+       && token[i] != '>'
        && ((token[i] != '\"' && token[i] != '\'') || i <= key_len))
       i++;
     old = token[i];
@@ -912,7 +916,7 @@ int _ds_url_tokenize(ds_diction_t diction, char *body, const char *key)
 /* Truncate tokens with EOT delimiters */
 char * _ds_truncate_token(const char *token) {
   char *tweaked;
-  int i; 
+  int i;
 
   if (token == NULL)
     return NULL;
@@ -926,7 +930,7 @@ char * _ds_truncate_token(const char *token) {
   while(i>1 && strspn(tweaked+i-2, DELIMITERS_EOT)) {
     tweaked[i-1] = 0;
     i--;
-  } 
+  }
 
   return tweaked;
 }
@@ -936,7 +940,7 @@ char * _ds_truncate_token(const char *token) {
  *
  * DESCRIPTION
  *   Clears the SBPH stack
- *   
+ *
  *   Clears and frees all of the tokens in the SBPH stack. Used when a
  *   boundary has been crossed (such as a new message header) where
  *   tokens from the previous boundary are no longer useful.
@@ -944,7 +948,7 @@ char * _ds_truncate_token(const char *token) {
 
 void _ds_sparse_clear(char **previous_tokens) {
   int i;
-  for(i=0;i<SPARSE_WINDOW_SIZE;i++) 
+  for(i=0;i<SPARSE_WINDOW_SIZE;i++)
     previous_tokens[i] = NULL;
   return;
 }

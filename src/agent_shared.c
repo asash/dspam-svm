@@ -24,7 +24,7 @@
  * agent_shared.c - shared agent-based components
  *
  * DESCRIPTION
- *   agent-based components shared between the full dspam agent (dspam) 
+ *   agent-based components shared between the full dspam agent (dspam)
  *   and the lightweight client agent (dspamc)
  */
 
@@ -191,8 +191,8 @@ int process_arguments(AGENT_CTX *ATX, int argc, char **argv) {
     }
 
     /* Build arg list to pass to server (when in client/server mode) */
- 
-    if (client && !flag_u && !flag_r && i>0) 
+
+    if (client && !flag_u && !flag_r && i>0)
     {
       if (argv[i][0] == 0)
         strlcat(ATX->client_args, "\"", sizeof(ATX->client_args));
@@ -219,16 +219,16 @@ int process_arguments(AGENT_CTX *ATX, int argc, char **argv) {
     }
 
 #ifdef TRUSTED_USER_SECURITY
-    if (!strcmp (argv[i], "--daemon") && ATX->trusted) 
+    if (!strcmp (argv[i], "--daemon") && ATX->trusted)
 #else
-    if (!strcmp (argv[i], "--daemon")) 
+    if (!strcmp (argv[i], "--daemon"))
 #endif
     {
       ATX->operating_mode = DSM_DAEMON;
       continue;
     }
 #endif
- 
+
     if (!strcmp (argv[i], "--nofork")) {
       ATX->fork = 0;
       continue;
@@ -311,13 +311,13 @@ int process_arguments(AGENT_CTX *ATX, int argc, char **argv) {
       strlcpy(ATX->mailfrom, strchr(argv[i], '=')+1, sizeof(ATX->mailfrom));
       LOGDEBUG("MAIL FROM: %s", ATX->mailfrom);
       continue;
-    }  
+    }
 
     if (!strncmp (argv[i], "--profile=", 10))
     {
 #ifdef TRUSTED_USER_SECURITY
       if (!ATX->trusted) {
-        LOG(LOG_ERR, ERR_TRUSTED_PRIV, "--profile", 
+        LOG(LOG_ERR, ERR_TRUSTED_PRIV, "--profile",
             __pw_uid, __pw_name);
         return EINVAL;
       }
@@ -331,7 +331,7 @@ int process_arguments(AGENT_CTX *ATX, int argc, char **argv) {
       continue;
     }
 
-    if (!strncmp (argv[i], "--signature=", 12)) 
+    if (!strncmp (argv[i], "--signature=", 12))
     {
       strlcpy(ATX->signature, strchr(argv[i], '=')+1, sizeof(ATX->signature));
       continue;
@@ -403,9 +403,9 @@ int process_arguments(AGENT_CTX *ATX, int argc, char **argv) {
         if (!strcmp(ptr, "stdout")) {
           ATX->flags |= DAF_DELIVER_SPAM;
           ATX->flags |= DAF_DELIVER_INNOCENT;
-          ATX->flags |= DAF_STDOUT; 
+          ATX->flags |= DAF_STDOUT;
         }
-        else if (!strcmp(ptr, "spam")) 
+        else if (!strcmp(ptr, "spam"))
           ATX->flags |= DAF_DELIVER_SPAM;
         else if (!strcmp(ptr, "innocent") || !strcmp(ptr, "nonspam"))
           ATX->flags |= DAF_DELIVER_INNOCENT;
@@ -417,7 +417,7 @@ int process_arguments(AGENT_CTX *ATX, int argc, char **argv) {
           free(dup);
           return EINVAL;
         }
-      
+
         ptr = strtok_r(NULL, ",", &ptrptr);
       }
       free(dup);
@@ -464,7 +464,7 @@ int process_arguments(AGENT_CTX *ATX, int argc, char **argv) {
 
     /* Append all unknown arguments as mailer args */
 
-    if (i>0 
+    if (i>0
 #ifdef TRUSTED_USER_SECURITY
         && ATX->trusted
 #endif
@@ -477,12 +477,12 @@ int process_arguments(AGENT_CTX *ATX, int argc, char **argv) {
       strlcat (ATX->mailer_args, " ", sizeof (ATX->mailer_args));
     }
   }
- 
+
   return 0;
 }
 
 
-/* 
+/*
  * process_features(AGENT_CTX *, const char *)
  *
  * DESCRIPTION
@@ -494,7 +494,7 @@ int process_arguments(AGENT_CTX *ATX, int argc, char **argv) {
  *
  * RETURN VALUES
  *   returns 0 on success, EINVAL when invalid options specified
- *    
+ *
  */
 
 int process_features(AGENT_CTX *ATX, const char *in) {
@@ -597,13 +597,13 @@ int apply_defaults(AGENT_CTX *ATX) {
 
   /* Default delivery agent */
 
-  if ( ! (ATX->flags & DAF_STDOUT) 
+  if ( ! (ATX->flags & DAF_STDOUT)
     && ATX->operating_mode != DSM_CLASSIFY
-    && (ATX->flags & DAF_DELIVER_INNOCENT || ATX->flags & DAF_DELIVER_SPAM)) 
+    && (ATX->flags & DAF_DELIVER_INNOCENT || ATX->flags & DAF_DELIVER_SPAM))
   {
     char key[32];
 #ifdef TRUSTED_USER_SECURITY
-    if (!ATX->trusted) 
+    if (!ATX->trusted)
       strcpy(key, "UntrustedDeliveryAgent");
     else
 #endif
@@ -646,7 +646,7 @@ int apply_defaults(AGENT_CTX *ATX) {
   if (!ATX->feature && _ds_find_attribute(agent_config, "Feature")) {
     attribute_t attrib = _ds_find_attribute(agent_config, "Feature");
 
-    while(attrib != NULL) { 
+    while(attrib != NULL) {
       process_features(ATX, attrib->value);
       attrib = attrib->next;
     }
@@ -676,7 +676,7 @@ int check_configuration(AGENT_CTX *ATX) {
     return EINVAL;
   }
 
-  if (ATX->classification != DSR_NONE && ATX->source == DSS_NONE && 
+  if (ATX->classification != DSR_NONE && ATX->source == DSS_NONE &&
      !(ATX->flags & DAF_UNLEARN))
   {
     LOG(LOG_ERR, ERR_AGENT_NO_SOURCE);
@@ -709,7 +709,6 @@ int check_configuration(AGENT_CTX *ATX) {
       return EINVAL;
     }
   }
-
   return 0;
 }
 
@@ -761,7 +760,7 @@ buffer * read_stdin(AGENT_CTX *ATX) {
 
       /*
        *  Don't include first line of message if it's a quarantine header added
-       *  by dspam at time of quarantine 
+       *  by dspam at time of quarantine
        */
 
       if (line==1 && !strncmp(buf, "From QUARANTINE", 15))
@@ -786,13 +785,13 @@ buffer * read_stdin(AGENT_CTX *ATX) {
         LOG (LOG_CRIT, ERR_MEM_ALLOC);
         goto bail;
       }
-  
+
       /*
        *  Use the original user id if we are reversing a false positive
-       *  (this is only necessary when using shared,managed groups 
+       *  (this is only necessary when using shared,managed groups
        */
 
-      if (!strncasecmp (buf, "X-DSPAM-User: ", 14) && 
+      if (!strncasecmp (buf, "X-DSPAM-User: ", 14) &&
           ATX->operating_mode == DSM_PROCESS    &&
           ATX->classification == DSR_ISINNOCENT &&
           ATX->source         == DSS_ERROR)
@@ -809,7 +808,7 @@ buffer * read_stdin(AGENT_CTX *ATX) {
         LOGDEBUG("found username %s in X-DSPAM-User header", user);
         nt_add (ATX->users, user);
       }
-  
+
       line++;
     }
   }
@@ -819,7 +818,7 @@ buffer * read_stdin(AGENT_CTX *ATX) {
     if (ATX->signature[0] != 0) {
       buffer_cat(msg, "\n\n");
     }
-    else { 
+    else {
       LOG (LOG_INFO, "empty message (no data received)");
       goto bail;
     }
@@ -860,7 +859,7 @@ int process_parseto(AGENT_CTX *ATX, const char *buf) {
   buffer = strdup (buf+3);
   h = strtok_r (buffer, "\n", &ptrptr);
   while (h != NULL) {
-    /* check for spam alias */
+    /*; ;check for spam alias */
     x = strstr(h, "<spam-");
     if (!x) x = strstr(h, " spam-");
     if (!x) x = strstr(h, "\tspam-");
@@ -909,7 +908,7 @@ int process_parseto(AGENT_CTX *ATX, const char *buf) {
   {
     char *z;
 
-    if (_ds_match_attribute(agent_config, 
+    if (_ds_match_attribute(agent_config,
                             "ChangeUserOnParse", "full"))
     {
       z = strtok_r(y, ">, \t\r\n", &ptrptr);

@@ -63,7 +63,6 @@ AC_CHECK_FUNCS(localtime_r)
 DS_CHECK_FUNC_INET_NTOA_R
 AC_CHECK_FUNCS(strcasestr)
 
-LIBS=
 
 #   Daemon support
 #
@@ -165,7 +164,7 @@ AC_SUBST(dspam_home)
 AC_MSG_CHECKING([for dspam_home])
 AC_MSG_RESULT([$dspam_home])
 
-if test -d /var/dspam 
+if test -d /var/dspam
 then
   AC_MSG_WARN([the default location for dspam_home has changed. please be sure to update your configuration or filesystem to reflect this.])
 fi
@@ -290,7 +289,7 @@ else
 fi
 AC_MSG_RESULT([$enable_trusted_user_security])
 
-#           
+#
 #   Clam/AV Support
 #
 AC_ARG_ENABLE(clamav,
@@ -305,7 +304,7 @@ case x"$enable_clamav" in
             ;;
     x)      # clamav output disabled by default
             enable_clamav=no
-            ;;   
+            ;;
     *)      AC_MSG_ERROR([unexpected value $enable_clamav for --{enable,disable}-clamav configure option])
             ;;
 esac
@@ -677,7 +676,7 @@ then
         AC_MSG_ERROR([Required version of libmysqlclient not found])
     fi
     libmysql_drv_cppflags="$MYSQL_CPPFLAGS $CPPFLAGS"
-    libmysql_drv_libs="$MYSQL_LIBS $LIBS" 
+    libmysql_drv_libs="$MYSQL_LIBS $LIBS"
     libmysql_drv_ldflags="$MYSQL_LDFLAGS $LDFLAGS"
 
     AC_SUBST(libmysql_drv_cppflags)
@@ -704,7 +703,7 @@ then
     pgsql_drv=yes
     storage_drv_subdirs="$storage_drv_subdirs tools.pgsql_drv"
 fi
-                                                                                
+
 if test x"$drv" = xsqlite_drv
 then
     DS_SQLITE(SQLITE_CPPFLAGS, SQLITE_LDFLAGS, SQLITE_LIBS,
@@ -778,7 +777,7 @@ LDFLAGS="$LDFLAGS $libmysql_drv_ldflags $libpgsql_drv_ldflags $libsqlite_drv_ldf
 else
 AC_MSG_RESULT([no])
 fi
- 
+
 AC_SUBST(storage_drv_subdirs)
 
 if test x"$storage_drv_subdirs" = x
